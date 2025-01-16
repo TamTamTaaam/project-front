@@ -1,0 +1,5 @@
+.table-border, .table-border th, .table-border td {
+    border-collapse: collapse;
+    border: 2px solid black;
+    padding: 2px;
+}

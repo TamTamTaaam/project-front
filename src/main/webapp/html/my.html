@@ -2,11 +2,17 @@
     <title>RPG</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="../css/my.css" rel="stylesheet">
-    <script src="../js/sendRequest.js"></script>
+    <script src="../js/addPlayersToTable.js" ></script>
+
 </head>
 <body>
 <h1>RPG admin panel</h1>
-<table id="rpgTable">
+<h2>Accounts list:</h2>
+<div> Count per page
+    <select name="Count per page" id="countPerPage"></select>
+</div>
+<script src="../js/addSelect.js"></script>
+<table id="rpgTable" class="table-border" >
     <thead>
         <tr>
             <th>#</th>
@@ -23,5 +29,26 @@
 
     </tbody>
 </table>
+<!--<div>-->
+<!--    <script>-->
+<!--        function sendRequest() {-->
+<!--            $.ajax({-->
+<!--                url: "/rest/players/count",-->
+<!--                type: "GET",-->
+<!--                success: function(counts) {-->
+<!--                    countAccounts(counts);-->
+<!--                },-->
+<!--                error: function(errors) {-->
+<!--                    console.error("Ошибка сети: " + errors.status);-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--        function countAccounts(counts) {-->
+<!--            -->
+<!--        }-->
+<!--        sendRequest();-->
+<!--    </script>-->
+<!--</div>-->
+
 </body>
 </html>
