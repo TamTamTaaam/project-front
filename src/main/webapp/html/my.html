@@ -3,13 +3,20 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="../css/my.css" rel="stylesheet">
     <script src="../js/addPlayersToTable.js" ></script>
-
+    <style>
+        #paginationButtons {
+            display: inline;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
 <h1>RPG admin panel</h1>
 <h2>Accounts list:</h2>
 <div> Count per page
-    <select name="Count per page" id="countPerPage"></select>
+    <select name="Count per page" id="countPerPage">
+        <option value="3">3</option>
+    </select>
 </div>
 <script src="../js/addSelect.js"></script>
 <table id="rpgTable" class="table-border" >
@@ -29,26 +36,8 @@
 
     </tbody>
 </table>
-<!--<div>-->
-<!--    <script>-->
-<!--        function sendRequest() {-->
-<!--            $.ajax({-->
-<!--                url: "/rest/players/count",-->
-<!--                type: "GET",-->
-<!--                success: function(counts) {-->
-<!--                    countAccounts(counts);-->
-<!--                },-->
-<!--                error: function(errors) {-->
-<!--                    console.error("Ошибка сети: " + errors.status);-->
-<!--                }-->
-<!--            });-->
-<!--        }-->
-<!--        function countAccounts(counts) {-->
-<!--            -->
-<!--        }-->
-<!--        sendRequest();-->
-<!--    </script>-->
-<!--</div>-->
-
+<span>Pages:</span>
+<div id="paginationButtons">
+</div>
 </body>
 </html>

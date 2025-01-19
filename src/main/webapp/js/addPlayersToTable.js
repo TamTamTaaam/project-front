@@ -1,8 +1,13 @@
 $(document).ready(function () {
-    function sendRequest() {
+    let totalAccounts = 0;
+    let accountsPerPage = 3;
+    let currentPage = 1;
+
+    function sendRequest(page) {
         $.ajax({
             url: "/rest/players",
             type: "GET",
+            data: { page: page, count: accountsPerPage },
             success: function(listPlayers) {
                 addPlayersToTable(listPlayers);
             },
@@ -11,8 +16,10 @@ $(document).ready(function () {
             }
         });
     }
+
     function addPlayersToTable(listPlayers) {
         var table = $('#rpgTable tbody');
+        table.empty();
         $.each(listPlayers, function(index, player) {
             var row = $('<tr></tr>');
             var playerData = [
@@ -31,5 +38,41 @@ $(document).ready(function () {
             table.append(row);
         });
     }
-    sendRequest();
+
+    function getCountAccounts() {
+        $.ajax({
+            url: "/rest/players/count",
+            type: "GET",
+            success: function(countAccounts) {
+                totalAccounts = countAccounts;
+                updatePagination();
+                sendRequest(currentPage);
+            },
+            error: function(errors) {
+                console.error("Ошибка сети: " + errors.status);
+            }
+        });
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(totalAccounts / accountsPerPage);
+        const paginationButtons = $('#paginationButtons');
+        paginationButtons.empty();
+
+        for (let i = 1; i <= totalPages; i++) {
+            const button = $('<button></button>').text(i);
+            button.on('click', function() {
+                currentPage = i;
+                sendRequest(currentPage);
+            });
+            paginationButtons.append(button);
+        }
+    }
+    $('#countPerPage').on('change', function() {
+        accountsPerPage = parseInt($(this).val());
+        updatePagination();
+        sendRequest(currentPage);
+    });
+
+    getCountAccounts();
 });
