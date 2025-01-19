@@ -30,10 +30,9 @@ public class PlayerController {
     @GetMapping()
     public List<PlayerInfo> getAll(@RequestParam(required = false) Integer pageNumber,
                                    @RequestParam(required = false) Integer pageSize) {
-        pageNumber = isNull(pageNumber) ? 0 : pageNumber;
-        pageSize = isNull(pageSize) ? 3 : pageSize;
-
-        List<Player> players = playerService.getAll(pageNumber, pageSize);
+        pageNumber = (pageNumber == null || pageNumber < 1) ? 1 : pageNumber;
+        pageSize = (pageSize == null || pageSize < 1) ? 3 : pageSize;
+        List<Player> players = playerService.getAll(pageNumber - 1, pageSize);
         return players.stream().map(PlayerController::toPlayerInfo).collect(Collectors.toList());
     }
 

@@ -1,14 +1,20 @@
 $(document).ready(function () {
     let totalAccounts = 0;
-    let accountsPerPage = 3;
+    let pageSize = 3;
     let currentPage = 1;
 
-    function sendRequest(page) {
+    function sendRequest(pageNumber) {
+        console.log("Запрос страницы:", pageNumber, "с размером страницы:", pageSize); // Отладка
         $.ajax({
             url: "/rest/players",
             type: "GET",
-            data: { page: page, count: accountsPerPage },
+            data:
+                { pageNumber: pageNumber,
+                    pageSize: pageSize,
+                    _: new Date().getTime() // Добавление временной метки
+                },
             success: function(listPlayers) {
+                console.log("Полученные игроки:", listPlayers); // Отладка
                 addPlayersToTable(listPlayers);
             },
             error: function(errors) {
@@ -44,6 +50,7 @@ $(document).ready(function () {
             url: "/rest/players/count",
             type: "GET",
             success: function(countAccounts) {
+                console.log("Общее количество аккаунтов: " + countAccounts); // Отладка
                 totalAccounts = countAccounts;
                 updatePagination();
                 sendRequest(currentPage);
@@ -55,7 +62,7 @@ $(document).ready(function () {
     }
 
     function updatePagination() {
-        const totalPages = Math.ceil(totalAccounts / accountsPerPage);
+        const totalPages = Math.ceil(totalAccounts / pageSize);
         const paginationButtons = $('#paginationButtons');
         paginationButtons.empty();
 
@@ -69,7 +76,9 @@ $(document).ready(function () {
         }
     }
     $('#countPerPage').on('change', function() {
-        accountsPerPage = parseInt($(this).val());
+        pageSize = parseInt($(this).val());
+        console.log("Количество аккаунтов на странице: " + pageSize); // Отладка
+        currentPage = 1;
         updatePagination();
         sendRequest(currentPage);
     });
