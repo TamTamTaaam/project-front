@@ -4,7 +4,6 @@ $(document).ready(function () {
     let currentPage = 1;
 
     function sendRequest(pageNumber) {
-        console.log("Запрос страницы:", pageNumber, "с размером страницы:", pageSize); // Отладка
         $.ajax({
             url: "/rest/players",
             type: "GET",
@@ -14,7 +13,6 @@ $(document).ready(function () {
                     _: new Date().getTime() // Добавление временной метки
                 },
             success: function(listPlayers) {
-                console.log("Полученные игроки:", listPlayers); // Отладка
                 addPlayersToTable(listPlayers);
             },
             error: function(errors) {
@@ -50,7 +48,6 @@ $(document).ready(function () {
             url: "/rest/players/count",
             type: "GET",
             success: function(countAccounts) {
-                console.log("Общее количество аккаунтов: " + countAccounts); // Отладка
                 totalAccounts = countAccounts;
                 updatePagination();
                 sendRequest(currentPage);
@@ -65,19 +62,24 @@ $(document).ready(function () {
         const totalPages = Math.ceil(totalAccounts / pageSize);
         const paginationButtons = $('#paginationButtons');
         paginationButtons.empty();
-
         for (let i = 1; i <= totalPages; i++) {
-            const button = $('<button></button>').text(i);
+            const button = $('<button></button>').addClass('pagination-button');
+            const pageNumber = $('<span></span>').text(i);
+            if (i === currentPage) {
+                pageNumber.addClass('current-page');
+            }
+            button.append(pageNumber);
             button.on('click', function() {
                 currentPage = i;
                 sendRequest(currentPage);
+                updatePagination();
             });
+
             paginationButtons.append(button);
         }
     }
     $('#countPerPage').on('change', function() {
         pageSize = parseInt($(this).val());
-        console.log("Количество аккаунтов на странице: " + pageSize); // Отладка
         currentPage = 1;
         updatePagination();
         sendRequest(currentPage);

@@ -3,3 +3,20 @@
     border: 2px solid black;
     padding: 2px;
 }
+#paginationButtons {
+    display: inline;
+    margin-left: 5px;
+}
+
+.pagination-button {
+    border: 1px solid black;
+    cursor: pointer;
+    background-color: lightgray;
+    color: black;
+    border-radius: 0px;
+}
+
+.current-page {
+    color: blueviolet;
+    background-color: lightgray;
+}
