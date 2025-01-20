@@ -39,6 +39,57 @@ $(document).ready(function () {
             $.each(playerData, function(i, data) {
                 row.append($('<td></td>').text(data));
             });
+
+            var deleteImage = $('<img>')
+                .attr('src', '../img/delete.png')
+                .attr('alt', 'Delete')
+                .css({ width: '20px', height: '20px', cursor: 'pointer' })
+                .on('click', function(id) {
+                    var playerId = player.id;
+                    $.ajax({
+                        url: "/rest/players/" + playerId,
+                        type: "DELETE",
+                        success: function() {
+                            row.remove();
+                            table.append(row);
+                        },
+                        error: function(errors) {
+                            console.error("Ошибка сети: " + errors.status);
+                        }
+                    });
+                });
+
+            var editImage = $('<img>')
+                .attr('src', '../img/edit.png')
+                .attr('alt', 'Edit')
+                .css({ width: '20px', height: '20px', cursor: 'pointer' })
+                .on('click', function(id) {
+                var playerId = player.id;
+                deleteImage.hide();
+                $.ajax({
+                    url: "/rest/players/" + playerId,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        name: player.name,
+                        title: player.title,
+                    }),
+                    success: function() {
+                        $(this).attr('src', '../img/save.png')
+                            .attr('alt', 'Save')
+                            .css({ width: '20px', height: '20px', cursor: 'pointer' });
+                        // table.append(row);
+                    }.bind(this),
+                    error: function(errors) {
+                        console.error("Ошибка сети: " + errors.status);
+                        console.error("Ответ сервера: ", errors.responseText);
+                    }
+                });
+            });
+
+
+            row.append($('<td></td>').append(editImage));
+            row.append($('<td></td>').append(deleteImage));
             table.append(row);
         });
     }
