@@ -63,29 +63,78 @@ $(document).ready(function () {
                 .attr('src', '../img/edit.png')
                 .attr('alt', 'Edit')
                 .css({ width: '20px', height: '20px', cursor: 'pointer' })
-                .on('click', function(id) {
-                var playerId = player.id;
-                deleteImage.hide();
-                $.ajax({
-                    url: "/rest/players/" + playerId,
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        name: player.name,
-                        title: player.title,
-                    }),
-                    success: function() {
-                        $(this).attr('src', '../img/save.png')
-                            .attr('alt', 'Save')
-                            .css({ width: '20px', height: '20px', cursor: 'pointer' });
-                        // table.append(row);
-                    }.bind(this),
-                    error: function(errors) {
-                        console.error("Ошибка сети: " + errors.status);
-                        console.error("Ответ сервера: ", errors.responseText);
+                .on('click', function() {
+                    if ($(this).attr('alt') === 'Edit') {
+                        $(this).attr('src', '../img/save.png').attr('alt', 'Save');
+                        row.find('td').each(function(index) {
+                            var cell = $(this);
+                            var currentValue = cell.text().trim();
+                            var inputIndexes = [1, 2]; // Индексы для Name и Title
+                            if (inputIndexes.includes(index)) {
+                                var input = $('<input>')
+                                    .val(currentValue)
+                                    .css({ width: '100%' });
+                                cell.empty().append(input);
+                            } else if (index === 3) {
+                                var select = $('<select>').css({ width: '100%' });
+                                var races = [];
+                                $('table tbody tr').each(function() {
+                                    var race = $(this).find('td').eq(3).text().trim();
+                                    if (!races.includes(race)) {
+                                        races.push(race);
+                                    }
+                                });
+                                races.forEach(function(race) {
+                                    select.append('<option value="' + race + '" ' + (currentValue === race ? 'selected' : '') + '>' + race + '</option>');
+                                });
+                                cell.empty().append(select);
+                            } else if (index === 4) {
+                                var select = $('<select>').css({ width: '100%' });
+                                var professions = [];
+                                $('table tbody tr').each(function() {
+                                    var profession = $(this).find('td').eq(4).text().trim();
+                                    if (!professions.includes(profession)) {
+                                        professions.push(profession);
+                                    }
+                                });
+                                professions.forEach(function(profession) {
+                                    select.append('<option value="' + profession + '" ' + (currentValue === profession ? 'selected' : '') + '>' + profession + '</option>');
+                                });
+                                cell.empty().append(select);
+                            } if (index === 5 || index === 6) {
+                                cell.empty().text(currentValue);
+                            } else if (index === 7) {
+                                var select = $('<select>').css({ width: '100%' });
+                                select.append('<option value="true" ' + (currentValue === 'true' ? 'selected' : '') + '>true</option>');
+                                select.append('<option value="false" ' + (currentValue === 'false' ? 'selected' : '') + '>false</option>');
+                                cell.empty().append(select);
+                            }
+                        });
+                    } else {
+                        // Сохраняем изменения
+                        var playerId = player.id;
+                        var updatedData = {
+                            name: row.find('td').eq(1).find('input').val(), // Name
+                            title: row.find('td').eq(2).find('input').val(), // Title
+                            race: row.find('td').eq(3).find('select').val(), // Race
+                            profession: row.find('td').eq(4).find('select').val(), // Profession
+                            banned: row.find('td').eq(7).find('select').val() === 'true' // Banned
+                        };
+                        $.ajax({
+                            url: "/rest/players/" + playerId,
+                            type: "PUT",
+                            contentType: "application/json",
+                            data: JSON.stringify(updatedData),
+                            success: function() {
+                                $(this).attr('src', '../img/edit.png').attr('alt', 'Edit');
+                                sendRequest(currentPage);
+                            }.bind(this),
+                            error: function(errors) {
+                                console.error("Ошибка сети: " + errors.status);
+                            }
+                        });
                     }
                 });
-            });
 
 
             row.append($('<td></td>').append(editImage));
