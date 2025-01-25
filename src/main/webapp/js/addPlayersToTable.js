@@ -126,6 +126,8 @@ $(document).ready(function () {
                 totalAccounts = countAccounts;
                 updatePagination();
                 sendRequest(currentPage);
+                const selectRaceInForm = document.getElementById('raceSelect');
+                populateRaceSelect(selectRaceInForm);
             },
             error: function(errors) {
                 console.error("Ошибка сети: " + errors.status);

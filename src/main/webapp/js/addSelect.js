@@ -6,19 +6,20 @@ document.addEventListener('DOMContentLoaded', function() {
         option.textContent = i;
         selectCountPerPages.appendChild(option);
     }
-    const selectRaceInForm = document.getElementById('raceSelect');
-    const players = getPlayers(); // Получаем игроков
-    console.log(players); // Проверяем, что возвращает getPlayers()
+    function populateRaceSelect(selectRaceInForm) {
+        getPlayers().then(players => {
+            const uniqueRaces = getUniqueRaces(players);
+            uniqueRaces.forEach(race => {
+                const option = document.createElement('option');
+                option.value = race;
+                option.textContent = race;
+                selectRaceInForm.appendChild(option);
+            });
+        }).catch(error => {
+            console.error('Ошибка получения рас:', error);
+        });
+    }
 
-    const uniqueRaces = getUniqueRaces(players); // Получаем уникальные расы
-    console.log(uniqueRaces); // Проверяем, что возвращает getUniqueRaces()
-
-    getUniqueRaces(getPlayers()).forEach( race => {
-        const optionForRaceSelect = document.createElement('option');
-        optionForRaceSelect.value = race;
-        optionForRaceSelect.textContent = race;
-        selectRaceInForm.appendChild(optionForRaceSelect);
-    });
 
     const selectProfessionInForm = document.getElementById('professionSelect');
 
@@ -30,9 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function getPlayers(pageNumber = 1, pageSize = 100) {
     try {
         const response = await fetch(`/rest/players?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-        const players = await response.json();
-        console.log('Полученные игроки:', players);
-        return players;
+        return await response.json();
     } catch (error) {
         console.error('Ошибка получения данных:', error);
         return [];
@@ -44,6 +43,8 @@ function getUniqueRaces(players) {
     players.forEach(player => {
         if (player.race) {
             races.add(player.race);
+        } else {
+            console.warn("Player does not have a race:", player);
         }
     });
     return Array.from(races);
@@ -56,7 +57,7 @@ function createRaceSelect(currentValue) {
             const option = $('<option>').val(race).text(race);
             selectRace.append(option);
         });
-        selectRace.val(currentValue || uniqueRaces[0] || ''); // Устанавливаем выбранное значение
+        selectRace.val(currentValue || uniqueRaces[0] || '');
     });
     return selectRace;
 }
@@ -69,7 +70,7 @@ function createProfessionSelect(currentValue) {
             const option = $('<option>').val(profession).text(profession);
             selectProfession.append(option);
         });
-        selectProfession.val(currentValue || ''); // Устанавливаем выбранное значение
+        selectProfession.val(currentValue || '');
     });
     return selectProfession;
 }
