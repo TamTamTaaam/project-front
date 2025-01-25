@@ -69,39 +69,15 @@ $(document).ready(function () {
                         row.find('td').each(function(index) {
                             var cell = $(this);
                             var currentValue = cell.text().trim();
-                            var inputIndexes = [1, 2]; // Индексы для Name и Title
-                            if (inputIndexes.includes(index)) {
-                                var input = $('<input>')
-                                    .val(currentValue)
-                                    .css({ width: '100%' });
+                            if ([1, 2].includes(index)) {
+                                var input = $('<input>').val(currentValue).css({ width: '100%' });
                                 cell.empty().append(input);
-                            } else if (index === 3) {
-                                var select = $('<select>').css({ width: '100%' });
-                                var races = [];
-                                $('table tbody tr').each(function() {
-                                    var race = $(this).find('td').eq(3).text().trim();
-                                    if (!races.includes(race)) {
-                                        races.push(race);
-                                    }
-                                });
-                                races.forEach(function(race) {
-                                    select.append('<option value="' + race + '" ' + (currentValue === race ? 'selected' : '') + '>' + race + '</option>');
-                                });
-                                cell.empty().append(select);
+                            }
+                            else if (index === 3) {
+                                cell.empty().append(createRaceSelect(currentValue));
                             } else if (index === 4) {
-                                var select = $('<select>').css({ width: '100%' });
-                                var professions = [];
-                                $('table tbody tr').each(function() {
-                                    var profession = $(this).find('td').eq(4).text().trim();
-                                    if (!professions.includes(profession)) {
-                                        professions.push(profession);
-                                    }
-                                });
-                                professions.forEach(function(profession) {
-                                    select.append('<option value="' + profession + '" ' + (currentValue === profession ? 'selected' : '') + '>' + profession + '</option>');
-                                });
-                                cell.empty().append(select);
-                            } if (index === 5 || index === 6) {
+                                cell.empty().append(createProfessionSelect(currentValue));
+                            } else if (index === 5 || index === 6) {
                                 cell.empty().text(currentValue);
                             } else if (index === 7) {
                                 var select = $('<select>').css({ width: '100%' });
@@ -111,18 +87,17 @@ $(document).ready(function () {
                             }
                         });
                     } else {
-                        // Сохраняем изменения
                         var playerId = player.id;
                         var updatedData = {
-                            name: row.find('td').eq(1).find('input').val(), // Name
-                            title: row.find('td').eq(2).find('input').val(), // Title
-                            race: row.find('td').eq(3).find('select').val(), // Race
-                            profession: row.find('td').eq(4).find('select').val(), // Profession
-                            banned: row.find('td').eq(7).find('select').val() === 'true' // Banned
+                            name: row.find('td').eq(1).find('input').val(),
+                            title: row.find('td').eq(2).find('input').val(),
+                            race: row.find('td').eq(3).find('select').val(),
+                            profession: row.find('td').eq(4).find('select').val(),
+                            banned: row.find('td').eq(7).find('select').val() === 'true'
                         };
                         $.ajax({
                             url: "/rest/players/" + playerId,
-                            type: "PUT",
+                            type: "POST",
                             contentType: "application/json",
                             data: JSON.stringify(updatedData),
                             success: function() {
@@ -184,6 +159,5 @@ $(document).ready(function () {
         updatePagination();
         sendRequest(currentPage);
     });
-
     getCountAccounts();
 });

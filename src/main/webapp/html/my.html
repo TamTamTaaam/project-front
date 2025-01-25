@@ -2,6 +2,7 @@
     <title>RPG</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="../css/my.css" rel="stylesheet">
+    <script src="../js/addSelect.js" ></script>
     <script src="../js/addPlayersToTable.js" ></script>
     <style>
         #paginationButtons {
@@ -15,10 +16,9 @@
 <h2>Accounts list:</h2>
 <div> Count per page
     <select name="Count per page" id="countPerPage">
-        <option value="3">3</option>
+        <option >3</option>
     </select>
 </div>
-<script src="../js/addSelect.js"></script>
 <table id="rpgTable" class="table-border" >
     <thead>
         <tr>
@@ -41,5 +41,38 @@
 <span>Pages:</span>
 <div id="paginationButtons">
 </div>
+<hr>
+<h2>Create new account </h2>
+    <form id="createAccountForm">
+    <div>
+        Name: <input type="text" id="name" required minlength="1" maxlength="12"/>
+    </div>
+     <div>
+        Title: <input type="text" id="title" required minlength="1" maxlength="30"/>
+     </div>
+     <div>
+         Race: <select id="raceSelect" required>
+     </select>
+     </div>
+     <div>
+        Profession:
+        <select id="professionSelect" required>
+        </select>
+     </div>
+     <div>
+        Level: <input type="number" id="level" required min="0" max="100" />
+     </div>
+     <div>
+         Birthday: <input type="date" id="birthday" required/>
+     </div>
+     <div>
+         Banned:
+         <select id="banned" required>
+             <option value="true">True</option>
+             <option value="false">False</option>
+         </select>
+     </div>
+        <button type="submit">Create Account</button>
+    </form>
 </body>
 </html>
