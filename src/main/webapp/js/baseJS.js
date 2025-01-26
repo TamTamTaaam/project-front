@@ -9,14 +9,13 @@ $(document).ready(function () {
             type: "GET",
             data:
                 { pageNumber: pageNumber,
-                    pageSize: pageSize,
-                    _: new Date().getTime() // Добавление временной метки
+                    pageSize: pageSize
                 },
             success: function(listPlayers) {
                 addPlayersToTable(listPlayers);
             },
             error: function(errors) {
-                console.error("Ошибка сети: " + errors.status);
+                console.error("Ошибка при получении данных. Ошибка сети: " + errors.status);
             }
         });
     }
@@ -33,7 +32,7 @@ $(document).ready(function () {
                 player.race,
                 player.profession,
                 player.level,
-                player.birthday,
+                formatDate(player.birthday),
                 player.banned
             ];
             $.each(playerData, function(i, data) {
@@ -54,7 +53,7 @@ $(document).ready(function () {
                             table.append(row);
                         },
                         error: function(errors) {
-                            console.error("Ошибка сети: " + errors.status);
+                            console.error("Ошибка при удалении аккаунта. Ошибка сети: " + errors.status);
                         }
                     });
                 });
@@ -105,13 +104,11 @@ $(document).ready(function () {
                                 sendRequest(currentPage);
                             }.bind(this),
                             error: function(errors) {
-                                console.error("Ошибка сети: " + errors.status);
+                                console.error("Ошибка при изменении аккаунта. Ошибка сети: " + errors.status);
                             }
                         });
                     }
                 });
-
-
             row.append($('<td></td>').append(editImage));
             row.append($('<td></td>').append(deleteImage));
             table.append(row);
@@ -128,9 +125,11 @@ $(document).ready(function () {
                 sendRequest(currentPage);
                 const selectRaceInForm = document.getElementById('raceSelect');
                 populateRaceSelect(selectRaceInForm);
+                const selectProfessionInForm = document.getElementById('professionSelect');
+                populateProfessionSelect(selectProfessionInForm);
             },
             error: function(errors) {
-                console.error("Ошибка сети: " + errors.status);
+                console.error("Ошибка при получении количества аккаунтов. Ошибка сети: " + errors.status);
             }
         });
     }
@@ -162,4 +161,39 @@ $(document).ready(function () {
         sendRequest(currentPage);
     });
     getCountAccounts();
+
+    $('#createAccountForm').on('submit', function(event) {
+        event.preventDefault();
+        const birthdayInput = $('#birthday').val();
+        const birthdayTimestamp = new Date(birthdayInput).getTime();
+        const newAccountData = {
+            name: $('#name').val(),
+            title: $('#title').val(),
+            race: $('#raceSelect').val(),
+            profession: $('#professionSelect').val(),
+            level: parseInt($('#level').val(), 10),
+            birthday: birthdayTimestamp,
+            banned: $('#banned').val() === 'true'
+        };
+
+        $.ajax({
+            url: "/rest/players",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(newAccountData),
+            success: function () {
+                $('#createAccountForm')[0].reset();
+                sendRequest(currentPage);
+            },
+            error:  function(errors) {
+                console.error("Ошибкапри добавлении нового аккаунта. Ошибка сети:", errors);
+            }
+        });
+    });
+    function formatDate(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('ru-RU');
+    }
+
+
 });
