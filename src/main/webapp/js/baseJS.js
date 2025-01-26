@@ -32,7 +32,7 @@ $(document).ready(function () {
                 player.race,
                 player.profession,
                 player.level,
-                formatDate(player.birthday),
+                new Date(player.birthday).toLocaleDateString('ru-RU'),
                 player.banned
             ];
             $.each(playerData, function(i, data) {
@@ -190,10 +190,5 @@ $(document).ready(function () {
             }
         });
     });
-    function formatDate(timestamp) {
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('ru-RU');
-    }
-
 
 });
